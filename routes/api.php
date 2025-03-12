@@ -9,19 +9,19 @@ use Illuminate\Support\Facades\Route;
 
 // Auth routes
 Route::get('/sayHello', [AuthController::class, 'sayHello']);
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/v1/admin/register', [AuthController::class, 'register']);
+Route::post('/v1/admin/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function() {
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/v1/admin/logout', [AuthController::class, 'logout']);
 });
 // Admin routes
 Route::middleware('auth:sanctum')->group(function() {
-    Route::middleware('role:super_admin')->prefix('admin')->group(function() {
+    Route::middleware('role:super_admin')->group(function() {
     
-        Route::get('/roles', [RoleController::class, 'index']);
+        Route::get('/v1/admin/roles', [RoleController::class, 'index']);
         Route::middleware('permission:view_dashboard')->group(function() {
-            Route::get('/dashboard', [DashboardController::class, 'index']);
-            Route::get('/dashboard/stock-alerts', [DashboardController::class, 'stockAlerts']);
+            Route::get('/v1/admin/dashboard', [DashboardController::class, 'index']);
+            Route::get('/v1/admin/dashboard/stock-alerts', [DashboardController::class, 'stockAlerts']);
         });
        
 });

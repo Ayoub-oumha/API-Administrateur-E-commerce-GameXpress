@@ -50,8 +50,18 @@ class DashboardController extends Controller
     }
     public function stockAlerts()
     {
+        $criticalStockProducts = Product::where('stock', '<', 5)
+            ->where('status', 'available')
+            ->select('id', 'name', 'stock', 'category_id')
+            ->with('category:id,name')
+            ->get();
+            
         return response()->json([
-            'message' => 'Stock alerts',
+            'status' => 'success',
+            'data' => [
+                'critical_stock_products' => $criticalStockProducts,
+                'count' => $criticalStockProducts->count(),
+            ]
         ]);
     }
 }
