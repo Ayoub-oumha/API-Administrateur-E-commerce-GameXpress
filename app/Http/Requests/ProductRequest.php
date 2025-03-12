@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ProductRequest extends FormRequest
 {
@@ -38,5 +40,13 @@ class ProductRequest extends FormRequest
         }
 
         return $rules;
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation error',
+            'status' => 'error',
+            'errors' => $validator->errors()
+        ], 422));
     }
 }
