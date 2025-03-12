@@ -18,11 +18,39 @@ class AuthController extends Controller
     }
     public function register(Request $request)
     {
-        $validatedData = $request->validate([
+        // $validatedData = $request->validate([
+        //     'name' => 'required',
+        //     'email' => 'required',
+        //     'password' => 'required',
+        // ]);
+        // Custom validation messages for required fields
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required',
-            'password' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:6',
+        ], [
+            'name.required' => 'The name field is required.',
+            'email.required' => 'The email field is required.',
+            'email.email' => 'Please enter a valid email address.',
+            'password.required' => 'The password field is required.',
+            'password.min' => 'The password must be at least 6 characters.',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validatedData = $validator->validated();
+
+        
+        if(User::where('email', $validatedData['email'])->exists()){
+            return response()->json([
+                'message' => 'Email already exists'
+            ], 400);
+        }
 
         $user = User::create([
             'name' => $validatedData['name'],
@@ -46,26 +74,27 @@ public function login(Request $request)
         'email' => 'required|string|email',
         'password' => 'required|string',
     ]);
-
-    
+    if(!auth()->attempt($validatedData)){
+        return response(['message'=>'Invalid credentials']);
+    }
+    // Find user by email
     $user = User::where('email', $validatedData['email'])->first();
 
-    
+    // Check if user exists and password is correct
     if (!$user || !Hash::check($validatedData['password'], $user->password)) {
         throw ValidationException::withMessages([
             'email' => ['The provided credentials are incorrect.'],
         ]);
     }
-
-    // Revoke old tokens (optional)
-    // $user->tokens()->delete();
     
-    
+    // Create new token
     $token = $user->createToken('auth_token')->plainTextToken;
 
     return response()->json([
         'message' => 'User logged in successfully',
         'user' => $user,
+        'roles' => $user->getRoleNames(),
+        'permissions' => $user->getAllPermissions()->pluck('name'),
         'token' => $token,
         'token_type' => 'Bearer'
     ]);
