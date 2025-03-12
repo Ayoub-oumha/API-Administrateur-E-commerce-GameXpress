@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\V1\Admin\DashboardController;
+use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
