@@ -2,22 +2,45 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Seed roles and permissions first
+        $this->call(RolePermissionSeeder::class);
+        
+        // Create admin user
+        $admin = User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@gamexpress.com',
+            'password' => Hash::make('password')
         ]);
+        
+        // Assign super_admin role
+        $admin->assignRole('super_admin');
+        
+        // Create product manager user
+        $productManager = User::create([
+            'name' => 'Product Manager',
+            'email' => 'products@gamexpress.com',
+            'password' => Hash::make('password')
+        ]);
+        
+        // Assign product_manager role
+        $productManager->assignRole('product_manager');
+        
+        // Create user manager
+        $userManager = User::create([
+            'name' => 'User Manager',
+            'email' => 'users@gamexpress.com',
+            'password' => Hash::make('password')
+        ]);
+        
+        // Assign user_manager role
+        $userManager->assignRole('user_manager');
     }
 }
