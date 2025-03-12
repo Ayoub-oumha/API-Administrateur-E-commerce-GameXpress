@@ -169,4 +169,4 @@ L'API suit une architecture **RESTful** avec :
 2. Sélectionnez la **collection** contenant vos endpoints
 3. Cliquez sur les trois points **(...)** puis sur **Exporter**
 4. Choisissez le format **JSON** et cliquez sur **Exporter**
-5. Enregistrez le fichier pour le partager ou le rendue
+5. Enregistrez le fichier pour le partager ou le rendue  
