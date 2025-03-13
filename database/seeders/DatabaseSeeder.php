@@ -12,7 +12,11 @@ class DatabaseSeeder extends Seeder
     {
         // Seed roles and permissions first
         $this->call(RolePermissionSeeder::class);
-        
+        $this->call([
+            // UserSeeder::class,     // If you have a UserSeeder
+            CategorySeeder::class, // Category seeder
+            ProductSeeder::class,  // Product seeder
+        ]);
         // Create admin user
         $admin = User::create([
             'name' => 'Super Admin',
