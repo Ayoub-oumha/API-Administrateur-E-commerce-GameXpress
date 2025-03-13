@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Admin;
+use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\products\ProductController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
@@ -39,3 +40,16 @@ Route::middleware(['auth:sanctum', 'permission:delete_products'])->delete('/v1/a
 Route::get('/test', function() {
     return response()->json(['message' => 'Test route works!']);
 });
+Route::middleware(['auth:sanctum', 'permission:view_categories'])->group(function() {
+    Route::get('/v1/admin/categories', [CategoryController::class, 'index']);
+    Route::get('/v1/admin/categories/{id}', [CategoryController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'permission:create_categories'])
+    ->post('/v1/admin/categories', [CategoryController::class, 'store']);
+
+Route::middleware(['auth:sanctum', 'permission:edit_categories'])
+    ->put('/v1/admin/categories/{id}', [CategoryController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:delete_categories'])
+    ->delete('/v1/admin/categories/{id}', [CategoryController::class, 'destroy']);
