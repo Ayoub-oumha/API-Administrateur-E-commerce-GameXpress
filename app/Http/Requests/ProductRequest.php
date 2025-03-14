@@ -25,14 +25,14 @@ class ProductRequest extends FormRequest
             'status' => ['required', Rule::in(['available', 'out_of_stock'])],
             'category_id' => 'required|exists:categories,id',
             'images' => 'sometimes|array',
-            'images.*.image_url' => 'required|string|url',
+            'images.*.image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'images.*.is_primary' => 'sometimes|boolean',
         ];
 
-        // For updates, make the validation rules less strict
+       
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             $rules = collect($rules)->map(function ($rule, $field) {
-                if (!in_array($field, ['images', 'images.*.image_url', 'images.*.is_primary'])) {
+                if (!in_array($field, ['images', 'images.*.image', 'images.*.is_primary'])) {
                     return str_replace('required', 'sometimes', $rule);
                 }
                 return $rule;
