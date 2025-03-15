@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Admin\Category\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\DashboardController;
 use App\Http\Controllers\Api\V1\Admin\products\ProductController;
 use App\Http\Controllers\Api\V1\Admin\RoleController;
+use App\Http\Controllers\Api\V1\Admin\Users\UserController;
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -53,3 +54,18 @@ Route::middleware(['auth:sanctum', 'permission:edit_categories'])
 
 Route::middleware(['auth:sanctum', 'permission:delete_categories'])
     ->delete('/v1/admin/categories/{id}', [CategoryController::class, 'destroy']);
+
+// users routes
+Route::middleware(['auth:sanctum', 'permission:view_users'])->group(function() {
+    Route::get('/v1/admin/users', [UserController::class, 'index']);
+    Route::get('/v1/admin/users/{id}', [UserController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'permission:create_users'])
+    ->post('/v1/admin/users', [UserController::class, 'store']);
+
+Route::middleware(['auth:sanctum', 'permission:edit_users'])
+    ->put('/v1/admin/users/{id}', [UserController::class, 'update']);
+
+Route::middleware(['auth:sanctum', 'permission:delete_users'])
+    ->delete('/v1/admin/users/{id}', [UserController::class, 'destroy']);
