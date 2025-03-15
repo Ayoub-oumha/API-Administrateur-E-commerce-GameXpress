@@ -6,7 +6,7 @@ Cette API d'administration pour une plateforme e-commerce (GameXpress) est déve
 
 ## 🛠️ Technologies Utilisées
 - **Framework** : Laravel 11 && PHP 8.3
-- **Authentification** : Laravel Sanctum
+- **Authentification** : Laravel Sanctume
 - **Gestion des rôles et permissions** : Spatie Permission
 - **Tests** : Pest PHP ou unitTest
 - **Base de données** : MySQL
