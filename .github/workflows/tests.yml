@@ -2,46 +2,69 @@ name: Tests
 
 on:
   push:
-    branches:
-      - master
-      - '*.x'
+    branches: [ main ]
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
-
-permissions:
-  contents: read
+    branches: [ main ]
 
 jobs:
   tests:
     runs-on: ubuntu-latest
-
+    
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         php: [8.2, 8.3, 8.4]
-
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: api_gamexpress_testing
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    
     name: PHP ${{ matrix.php }}
-
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@v3
+      
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, pdo_mysql
           coverage: none
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-
+      
       - name: Copy environment file
-        run: cp .env.example .env
-
-      - name: Generate app key
-        run: php artisan key:generate
-
-      - name: Execute tests
+        run: cp .env.example .env.testing
+      
+      - name: Configure environment
+        run: |
+          echo "APP_ENV=testing" >> .env.testing
+          echo "DB_CONNECTION=mysql" >> .env.testing
+          echo "DB_HOST=127.0.0.1" >> .env.testing
+          echo "DB_PORT=3306" >> .env.testing
+          echo "DB_DATABASE=api_gamexpress_testing" >> .env.testing
+          echo "DB_USERNAME=root" >> .env.testing
+          echo "DB_PASSWORD=password" >> .env.testing
+      
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress
+      
+      - name: Generate key
+        run: php artisan key:generate --env=testing
+      
+      - name: Directory permissions
+        run: chmod -R 777 storage bootstrap/cache
+      
+      - name: Create database directory
+        run: mkdir -p database
+      
+      - name: Run migrations
+        run: php artisan migrate --env=testing --force
+      
+      - name: Run tests
         run: vendor/bin/phpunit
